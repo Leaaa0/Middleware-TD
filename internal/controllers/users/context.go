@@ -3,11 +3,12 @@ package users
 import (
 	"context"
 	"fmt"
+	"middleware/config/internal/helpers"
+	"middleware/config/internal/models"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/gofrs/uuid"
-	"middleware/example/internal/helpers"
-	"middleware/example/internal/models"
-	"net/http"
 )
 
 // Context

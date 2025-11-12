@@ -1,12 +1,13 @@
 package main
 
 import (
+	"middleware/config/internal/controllers/users"
+	"middleware/config/internal/helpers"
+	_ "middleware/config/internal/models"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
-	"middleware/example/internal/controllers/users"
-	"middleware/example/internal/helpers"
-	_ "middleware/example/internal/models"
-	"net/http"
 )
 
 func main() {

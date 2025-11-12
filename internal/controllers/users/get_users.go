@@ -2,8 +2,8 @@ package users
 
 import (
 	"encoding/json"
-	"middleware/example/internal/helpers"
-	"middleware/example/internal/services/users"
+	"middleware/config/internal/helpers"
+	"middleware/config/internal/services/users"
 	"net/http"
 )
 

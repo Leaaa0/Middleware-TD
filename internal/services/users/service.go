@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/gofrs/uuid"
 	"github.com/sirupsen/logrus"
-	"middleware/example/internal/models"
-	repository "middleware/example/internal/repositories/users"
+	"middleware/config/internal/models"
+	repository "middleware/config/internal/repositories/users"
 )
 
 func GetAllUsers() ([]models.User, error) {

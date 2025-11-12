@@ -3,7 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
-	"middleware/example/internal/models"
+	"middleware/config/internal/models"
 	"net/http"
 )
 
