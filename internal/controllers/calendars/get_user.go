@@ -1,27 +1,28 @@
-package users
+package calendars
 
 import (
 	"encoding/json"
-	"github.com/gofrs/uuid"
 	"middleware/config/internal/helpers"
 	"middleware/config/internal/services/users"
 	"net/http"
+
+	"github.com/gofrs/uuid"
 )
 
-// GetUser
-// @Tags         users
-// @Summary      Get a user.
-// @Description  Get a user.
-// @Param        id           	path      string  true  "User UUID formatted ID"
-// @Success      200            {object}  models.User
+// GetCalendar
+// @Tags         calendars
+// @Summary      Get a calendar.
+// @Description  Get a calendar.
+// @Param        id           	path      string  true  "calendar UUID formatted ID"
+// @Success      200            {object}  models.calendar
 // @Failure      422            "Cannot parse id"
 // @Failure      500            "Something went wrong"
-// @Router       /users/{id} [get]
-func GetUser(w http.ResponseWriter, r *http.Request) {
+// @Router       /calendars/{id} [get]
+func GetCalendar(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userId, _ := ctx.Value("userId").(uuid.UUID) // getting key set in context.go
 
-	user, err := users.GetUserById(userId)
+	user, err := calendars.GetCalendarById(userId)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)

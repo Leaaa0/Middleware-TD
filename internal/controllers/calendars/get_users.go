@@ -1,4 +1,4 @@
-package users
+package calendars
 
 import (
 	"encoding/json"
@@ -7,16 +7,16 @@ import (
 	"net/http"
 )
 
-// GetUsers
-// @Tags         users
-// @Summary      Get all users.
-// @Description  Get all users.
-// @Success      200            {array}  models.User
+// GetCalendars
+// @Tags         calendars
+// @Summary      Get all calendars.
+// @Description  Get all calendars.
+// @Success      200            {array}  models.Calendar
 // @Failure      500             "Something went wrong"
-// @Router       /users [get]
-func GetUsers(w http.ResponseWriter, _ *http.Request) {
+// @Router       /calendars [get]
+func GetCalendars(w http.ResponseWriter, _ *http.Request) {
 	// calling service
-	users, err := users.GetAllUsers()
+	users, err := calendars.GetAllCalendars()
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)

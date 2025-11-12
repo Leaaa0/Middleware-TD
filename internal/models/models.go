@@ -4,7 +4,8 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type User struct {
-	Id   *uuid.UUID `json:"id"`
-	Name string     `json:"name"`
+type Calendar struct {
+	Id    *uuid.UUID `json:"id"`
+	UcaId int        `json:"ucaId"`
+	Name  string     `json:"name"`
 }

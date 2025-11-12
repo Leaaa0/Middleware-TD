@@ -1,50 +1,51 @@
-package users
+package calendars
 
 import (
-	"github.com/gofrs/uuid"
 	"middleware/config/internal/helpers"
 	"middleware/config/internal/models"
+
+	"github.com/gofrs/uuid"
 )
 
-func GetAllUsers() ([]models.User, error) {
+func GetAllCalendars() ([]models.Calendar, error) {
 	db, err := helpers.OpenDB()
 	if err != nil {
 		return nil, err
 	}
-	rows, err := db.Query("SELECT * FROM users")
+	rows, err := db.Query("SELECT * FROM calendars")
 	helpers.CloseDB(db)
 	if err != nil {
 		return nil, err
 	}
 
 	// parsing datas in object slice
-	users := []models.User{}
+	calendars := []models.Calendar{}
 	for rows.Next() {
-		var data models.User
+		var data models.Calendar
 		err = rows.Scan(&data.Id, &data.Name)
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, data)
+		calendars = append(calendars, data)
 	}
 	// don't forget to close rows
 	_ = rows.Close()
 
-	return users, err
+	return calendars, err
 }
 
-func GetUserById(id uuid.UUID) (*models.User, error) {
+func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
 	db, err := helpers.OpenDB()
 	if err != nil {
 		return nil, err
 	}
-	row := db.QueryRow("SELECT * FROM users WHERE id=?", id.String())
+	row := db.QueryRow("SELECT * FROM calendars WHERE id=?", id.String())
 	helpers.CloseDB(db)
 
-	var user models.User
-	err = row.Scan(&user.Id, &user.Name)
+	var calendar models.Calendar
+	err = row.Scan(&calendar.Id, &calendar.Name)
 	if err != nil {
 		return nil, err
 	}
-	return &user, err
+	return &calendar, err
 }

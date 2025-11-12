@@ -1,42 +1,43 @@
-package users
+package calendars
 
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gofrs/uuid"
-	"github.com/sirupsen/logrus"
 	"middleware/config/internal/models"
 	repository "middleware/config/internal/repositories/users"
+
+	"github.com/gofrs/uuid"
+	"github.com/sirupsen/logrus"
 )
 
-func GetAllUsers() ([]models.User, error) {
+func GetAllCalendars() ([]models.Calendar, error) {
 	var err error
 	// calling repository
-	users, err := repository.GetAllUsers()
+	calendars, err := repository.GetAllCalendars()
 	// managing errors
 	if err != nil {
-		logrus.Errorf("error retrieving users : %s", err.Error())
+		logrus.Errorf("error retrieving calendars : %s", err.Error())
 		return nil, &models.ErrorGeneric{
-			Message: "Something went wrong while retrieving users",
+			Message: "Something went wrong while retrieving calendars",
 		}
 	}
 
-	return users, nil
+	return calendars, nil
 }
 
-func GetUserById(id uuid.UUID) (*models.User, error) {
-	user, err := repository.GetUserById(id)
+func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
+	calendar, err := repository.GetCalendarById(id)
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
 			return nil, &models.ErrorNotFound{
-				Message: "user not found",
+				Message: "calendar not found",
 			}
 		}
-		logrus.Errorf("error retrieving user %s : %s", id.String(), err.Error())
+		logrus.Errorf("error retrieving calendar %s : %s", id.String(), err.Error())
 		return nil, &models.ErrorGeneric{
-			Message: fmt.Sprintf("Something went wrong while retrieving user %s", id.String()),
+			Message: fmt.Sprintf("Something went wrong while retrieving calendar %s", id.String()),
 		}
 	}
 
-	return user, err
+	return calendar, err
 }

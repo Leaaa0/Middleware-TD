@@ -1,7 +1,7 @@
 package main
 
 import (
-	"middleware/config/internal/controllers/users"
+	"middleware/config/internal/controllers/calendars"
 	"middleware/config/internal/helpers"
 	_ "middleware/config/internal/models"
 	"net/http"
@@ -14,14 +14,14 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Route("/users", func(r chi.Router) { // route /users
-		r.Get("/", users.GetUsers)    // GET /users - Récupérer tous les users
-		r.Post("/", users.CreateUser) // POST /users - Créer un nouveau user
+		r.Get("/", calendars.GetCalendar)     // GET /users - Récupérer tous les users
+		r.Post("/", calendars.CreateCalendar) // POST /users - Créer un nouveau user
 
 		r.Route("/{id}", func(r chi.Router) { // route /users/{id}
-			r.Use(users.Context)            // Use Context method to get user ID
-			r.Get("/", users.GetUser)       // GET /users/{id} - Récupérer un user
-			r.Put("/", users.UpdateUser)    // PUT /users/{id} - Mettre à jour un user
-			r.Delete("/", users.DeleteUser) // DELETE /users/{id} - Supprimer un user
+			r.Use(calendars.Context)                // Use Context method to get user ID
+			r.Get("/", calendars.GetCalendar)       // GET /users/{id} - Récupérer un user
+			r.Put("/", calendars.UpdateCalendar)    // PUT /users/{id} - Mettre à jour un user
+			r.Delete("/", calendars.DeleteCalendar) // DELETE /users/{id} - Supprimer un user
 		})
 	})
 
@@ -35,8 +35,9 @@ func init() {
 		logrus.Fatalf("error while opening database : %s", err.Error())
 	}
 	schemes := []string{
-		`CREATE TABLE IF NOT EXISTS users (
+		`CREATE TABLE IF NOT EXISTS calendars (
 			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
+    		ucaId INT NOT NULL,
 			name VARCHAR(255) NOT NULL
 		);`,
 	}
