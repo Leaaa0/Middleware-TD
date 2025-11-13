@@ -85,3 +85,18 @@ func DeleteCalendar(id uuid.UUID) error {
 
 	return nil
 }
+
+func UpdateCalendar(id uuid.UUID, ucaId int, name string) error {
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("UPDATE calendars SET ucaId=?, name=? WHERE id=?", ucaId, name, id.String())
+	helpers.CloseDB(db)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

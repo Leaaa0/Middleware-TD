@@ -68,3 +68,15 @@ func DeleteCalendar(id uuid.UUID) error {
 
 	return err
 }
+
+func UpdateCalendar(id uuid.UUID, ucaId int, name string) error {
+	err := repository.UpdateCalendar(id, ucaId, name)
+	if err != nil {
+		logrus.Errorf("error deleting calendar %s : %s", id.String(), err.Error())
+		return &models.ErrorGeneric{
+			Message: fmt.Sprintf("Something went wrong while deleting calendar %s", id.String()),
+		}
+	}
+
+	return err
+}
