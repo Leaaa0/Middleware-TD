@@ -41,3 +41,18 @@ func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
 
 	return calendar, err
 }
+
+func CreateCalendar(ucaId int, name string) error {
+	var err error
+	// calling repository
+	err = repository.CreateCalendar(ucaId, name)
+	// managing errors
+	if err != nil {
+		logrus.Errorf("error adding new calendar : %s", err.Error())
+		return &models.ErrorGeneric{
+			Message: "Something went wrong while adding new calendar",
+		}
+	}
+
+	return nil
+}

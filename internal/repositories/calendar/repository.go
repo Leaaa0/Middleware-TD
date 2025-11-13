@@ -22,7 +22,7 @@ func GetAllCalendars() ([]models.Calendar, error) {
 	calendars := []models.Calendar{}
 	for rows.Next() {
 		var data models.Calendar
-		err = rows.Scan(&data.Id, &data.Name)
+		err = rows.Scan(&data.Id, &data.UcaId, &data.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -43,9 +43,30 @@ func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
 	helpers.CloseDB(db)
 
 	var calendar models.Calendar
-	err = row.Scan(&calendar.Id, &calendar.Name)
+	err = row.Scan(&calendar.Id, &calendar.UcaId, &calendar.Name)
 	if err != nil {
 		return nil, err
 	}
 	return &calendar, err
+}
+
+func CreateCalendar(ucaId int, name string) error {
+
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return err
+	}
+
+	id, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("INSERT INTO calendars (id, ucaId, name) VALUES (?,?,?)", id.String(), ucaId, name)
+	helpers.CloseDB(db)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
