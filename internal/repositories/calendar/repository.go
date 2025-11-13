@@ -50,25 +50,25 @@ func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
 	return &calendar, err
 }
 
-func CreateCalendar(ucaId int, name string) error {
+func CreateCalendar(ucaId int, name string) (*models.Calendar, error) {
 
 	db, err := helpers.OpenDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = db.Exec("INSERT INTO calendars (id, ucaId, name) VALUES (?,?,?)", id.String(), ucaId, name)
 	helpers.CloseDB(db)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &models.Calendar{&id, ucaId, name}, nil
 }
 
 func DeleteCalendar(id uuid.UUID) error {
@@ -86,17 +86,17 @@ func DeleteCalendar(id uuid.UUID) error {
 	return nil
 }
 
-func UpdateCalendar(id uuid.UUID, ucaId int, name string) error {
+func UpdateCalendar(id uuid.UUID, ucaId int, name string) (*models.Calendar, error) {
 	db, err := helpers.OpenDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = db.Exec("UPDATE calendars SET ucaId=?, name=? WHERE id=?", ucaId, name, id.String())
 	helpers.CloseDB(db)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &models.Calendar{&id, ucaId, name}, nil
 }

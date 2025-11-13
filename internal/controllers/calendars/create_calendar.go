@@ -2,6 +2,7 @@ package calendars
 
 import (
 	"encoding/json"
+	"middleware/config/internal/models"
 	"middleware/config/internal/services/calendars"
 	"net/http"
 
@@ -11,6 +12,11 @@ import (
 type CalendarAdding struct {
 	UcaId int    `json:"ucaId"`
 	Name  string `json:"name"`
+}
+
+type CreateCalendarResponse struct {
+	Message  string          `json:"message"`
+	Calendar models.Calendar `json:"calendar"`
 }
 
 // CreateCalendar
@@ -34,14 +40,18 @@ func CreateCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = calendars.CreateCalendar(calendarAdding.UcaId, calendarAdding.Name)
+	calendarCreated, err := calendars.CreateCalendar(calendarAdding.UcaId, calendarAdding.Name)
 	if err != nil {
 		http.Error(w, "Error while adding new calendar", http.StatusBadRequest)
 		return
 	}
 
+	bodyResponse := CreateCalendarResponse{
+		Message:  "Calendar added successfully",
+		Calendar: *calendarCreated,
+	}
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal("Caldendar added successfully")
+	body, _ := json.Marshal(bodyResponse)
 	_, _ = w.Write(body)
 	return
 }

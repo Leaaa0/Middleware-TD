@@ -42,19 +42,19 @@ func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
 	return calendar, err
 }
 
-func CreateCalendar(ucaId int, name string) error {
+func CreateCalendar(ucaId int, name string) (*models.Calendar, error) {
 	var err error
 	// calling repository
-	err = repository.CreateCalendar(ucaId, name)
+	calendarCreated, err := repository.CreateCalendar(ucaId, name)
 	// managing errors
 	if err != nil {
 		logrus.Errorf("error adding new calendar : %s", err.Error())
-		return &models.ErrorGeneric{
+		return nil, &models.ErrorGeneric{
 			Message: "Something went wrong while adding new calendar",
 		}
 	}
 
-	return nil
+	return calendarCreated, nil
 }
 
 func DeleteCalendar(id uuid.UUID) error {
@@ -69,14 +69,14 @@ func DeleteCalendar(id uuid.UUID) error {
 	return err
 }
 
-func UpdateCalendar(id uuid.UUID, ucaId int, name string) error {
-	err := repository.UpdateCalendar(id, ucaId, name)
+func UpdateCalendar(id uuid.UUID, ucaId int, name string) (*models.Calendar, error) {
+	calendarUpdated, err := repository.UpdateCalendar(id, ucaId, name)
 	if err != nil {
 		logrus.Errorf("error deleting calendar %s : %s", id.String(), err.Error())
-		return &models.ErrorGeneric{
+		return nil, &models.ErrorGeneric{
 			Message: fmt.Sprintf("Something went wrong while deleting calendar %s", id.String()),
 		}
 	}
 
-	return err
+	return calendarUpdated, err
 }

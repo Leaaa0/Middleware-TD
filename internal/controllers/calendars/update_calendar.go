@@ -3,6 +3,7 @@ package calendars
 import (
 	"encoding/json"
 	"middleware/config/internal/helpers"
+	"middleware/config/internal/models"
 	"middleware/config/internal/services/calendars"
 	"net/http"
 
@@ -13,6 +14,11 @@ import (
 type CalendarModifying struct {
 	UcaId int    `json:"ucaId"`
 	Name  string `json:"name"`
+}
+
+type UpdateCalendarResponse struct {
+	Message  string          `json:"message"`
+	Calendar models.Calendar `json:"calendar"`
 }
 
 // UpdateCalendar
@@ -41,7 +47,7 @@ func UpdateCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = calendars.UpdateCalendar(calendarId, calendarModifying.UcaId, calendarModifying.Name)
+	calendarUpdated, err := calendars.UpdateCalendar(calendarId, calendarModifying.UcaId, calendarModifying.Name)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)
@@ -51,8 +57,12 @@ func UpdateCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	bodyResponse := UpdateCalendarResponse{
+		Message:  "Calendar updated successfully",
+		Calendar: *calendarUpdated,
+	}
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal("Calendar modified successfully")
+	body, _ := json.Marshal(bodyResponse)
 	_, _ = w.Write(body)
 	return
 }
