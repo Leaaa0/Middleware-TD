@@ -29,8 +29,8 @@ func CreateCalendar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "JSON data incorrects", http.StatusBadRequest)
 		return
 	}
-	if calendarAdding.Name == "" {
-		http.Error(w, " Name required", http.StatusBadRequest)
+	if calendarAdding.Name == "" || calendarAdding.UcaId < 10000 { // ucaId doit être composé de 6 chiffres
+		http.Error(w, " Name and ucaID required", http.StatusBadRequest)
 		return
 	}
 
