@@ -70,3 +70,18 @@ func CreateCalendar(ucaId int, name string) error {
 
 	return nil
 }
+
+func DeleteCalendar(id uuid.UUID) error {
+	db, err := helpers.OpenDB()
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM calendars WHERE id=?", id.String())
+	helpers.CloseDB(db)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
