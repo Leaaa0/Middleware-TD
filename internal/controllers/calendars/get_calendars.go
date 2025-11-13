@@ -3,7 +3,7 @@ package calendars
 import (
 	"encoding/json"
 	"middleware/config/internal/helpers"
-	"middleware/config/internal/services/users"
+	"middleware/config/internal/services/calendars"
 	"net/http"
 )
 
@@ -16,7 +16,7 @@ import (
 // @Router       /calendars [get]
 func GetCalendars(w http.ResponseWriter, _ *http.Request) {
 	// calling service
-	users, err := calendars.GetAllCalendars()
+	calendars, err := calendars.GetAllCalendars()
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)
@@ -27,7 +27,7 @@ func GetCalendars(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(users)
+	body, _ := json.Marshal(calendars)
 	_, _ = w.Write(body)
 	return
 }

@@ -13,8 +13,8 @@ import (
 func main() {
 	r := chi.NewRouter()
 
-	r.Route("/users", func(r chi.Router) { // route /users
-		r.Get("/", calendars.GetCalendar)     // GET /users - Récupérer tous les users
+	r.Route("/calendars", func(r chi.Router) { // route /users
+		r.Get("/", calendars.GetCalendars)    // GET /users - Récupérer tous les users
 		r.Post("/", calendars.CreateCalendar) // POST /users - Créer un nouveau user
 
 		r.Route("/{id}", func(r chi.Router) { // route /users/{id}

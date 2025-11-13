@@ -3,7 +3,7 @@ package calendars
 import (
 	"encoding/json"
 	"middleware/config/internal/helpers"
-	"middleware/config/internal/services/users"
+	"middleware/config/internal/services/calendars"
 	"net/http"
 
 	"github.com/gofrs/uuid"
@@ -20,9 +20,9 @@ import (
 // @Router       /calendars/{id} [get]
 func GetCalendar(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userId, _ := ctx.Value("userId").(uuid.UUID) // getting key set in context.go
+	calendarId, _ := ctx.Value("calendarId").(uuid.UUID) // getting key set in context.go
 
-	user, err := calendars.GetCalendarById(userId)
+	calendar, err := calendars.GetCalendarById(calendarId)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)
@@ -33,7 +33,7 @@ func GetCalendar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(user)
+	body, _ := json.Marshal(calendar)
 	_, _ = w.Write(body)
 	return
 }
