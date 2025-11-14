@@ -2,9 +2,10 @@ package helpers
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
 	"middleware/config/internal/models"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
 // RespondError
