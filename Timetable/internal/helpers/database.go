@@ -8,7 +8,7 @@ import (
 )
 
 func OpenDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "file:calendars.db")
+	db, err := sql.Open("sqlite3", "file:timetable.db")
 	if err != nil {
 		db.SetMaxOpenConns(1)
 	}
