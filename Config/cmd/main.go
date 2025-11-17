@@ -39,6 +39,12 @@ func init() {
 			id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
     		ucaId INT NOT NULL,
 			name VARCHAR(255) NOT NULL
+		);
+		CREATE TABLE IF NOT EXISTS alerts (
+		    id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
+		    ressource VARCHAR(255),
+		    allRessource BOOLEAN NOT NULL,
+		    mail VARCHAR(255)
 		);`,
 	}
 	for _, scheme := range schemes {
