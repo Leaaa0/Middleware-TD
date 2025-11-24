@@ -11,9 +11,9 @@ import (
 )
 
 type AlertAdding struct {
-	Resource     *uuid.UUID `json:"resource"`
-	AllResources bool       `json:"allResources"`
-	Mail         string     `json:"mail"`
+	Resource     string `json:"resource"`
+	AllResources bool   `json:"allResources"`
+	Mail         string `json:"mail"`
 }
 
 type CreateAlertResponse struct {
@@ -37,16 +37,22 @@ func CreatAlert(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "JSON data incorrects", http.StatusBadRequest)
 		return
 	}
-	if alertAdding.Mail == "" { // ucaId doit être composé de 6 chiffres
+	if alertAdding.Mail == "" {
 		http.Error(w, "Contact mail required", http.StatusBadRequest)
 		return
 	}
-	if alertAdding.AllResources == false && alertAdding.Resource.String() == "" {
+	if alertAdding.AllResources == false && alertAdding.Resource == "" {
 		http.Error(w, "Resource id required if AllResources is false", http.StatusBadRequest)
 		return
 	}
 
-	alertCreated, err := alerts.CreateAlert(alertAdding.Resource.String(), alertAdding.AllResources, alertAdding.Mail)
+	_, err = uuid.FromString(alertAdding.Resource)
+	if err != nil {
+		http.Error(w, "Resource ID incorrect : must be an UUID", http.StatusBadRequest)
+		return
+	}
+
+	alertCreated, err := alerts.CreateAlert(alertAdding.Resource, alertAdding.AllResources, alertAdding.Mail)
 	if err != nil {
 		http.Error(w, "Error while adding new alert", http.StatusBadRequest)
 		return
