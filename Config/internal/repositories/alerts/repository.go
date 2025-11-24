@@ -72,8 +72,7 @@ func CreateAlert(resource string, allResources bool, mail string) (*models.Alert
 		return nil, err
 	}
 
-	resourceUuid, _ := uuid.FromString(resource)
-	return &models.Alert{&id, &resourceUuid, allResources, mail}, nil
+	return GetAlertById(id)
 }
 
 func DeleteAlert(id uuid.UUID) error {
@@ -107,6 +106,5 @@ func UpdateAlert(id uuid.UUID, resource string, allResource bool, mail string) (
 		return nil, err
 	}
 
-	resourceUuid, _ := uuid.FromString(resource)
-	return &models.Alert{&id, &resourceUuid, allResource, mail}, nil
+	return GetAlertById(id)
 }
