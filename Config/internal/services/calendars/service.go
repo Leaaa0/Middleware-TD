@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"middleware/config/internal/models"
-	repository "middleware/config/internal/repositories/calendar"
+	repository "middleware/config/internal/repositories/calendars"
 
 	"github.com/gofrs/uuid"
 	"github.com/sirupsen/logrus"

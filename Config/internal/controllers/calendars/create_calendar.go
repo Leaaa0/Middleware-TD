@@ -23,7 +23,7 @@ type CreateCalendarResponse struct {
 // @Tags         calendar
 // @Summary      Create a calendar.
 // @Description  Create a calendar
-// @Success      200            {object}  models.Calendar
+// @Success      200            {object}  models.Alert
 // @Failure      500            "Something went wrong"
 // @Router       /calendars [post]
 func CreateCalendar(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func CreateCalendar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bodyResponse := CreateCalendarResponse{
-		Message:  "Calendar added successfully",
+		Message:  "Alert added successfully",
 		Calendar: *calendarCreated,
 	}
 	w.WriteHeader(http.StatusOK)

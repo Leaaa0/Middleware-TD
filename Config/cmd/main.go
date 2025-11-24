@@ -1,6 +1,7 @@
 package main
 
 import (
+	"middleware/config/internal/controllers/alerts"
 	"middleware/config/internal/controllers/calendars"
 	"middleware/config/internal/helpers"
 	_ "middleware/config/internal/models"
@@ -13,15 +14,26 @@ import (
 func main() {
 	r := chi.NewRouter()
 
-	r.Route("/calendars", func(r chi.Router) { // route /users
-		r.Get("/", calendars.GetCalendars)    // GET /users - Récupérer tous les users
-		r.Post("/", calendars.CreateCalendar) // POST /users - Créer un nouveau user
+	r.Route("/calendars", func(r chi.Router) { // route /calendars
+		r.Get("/", calendars.GetCalendars)    // GET /calendars - Get all calendars
+		r.Post("/", calendars.CreateCalendar) // POST /calendars - Create a new calendar
 
-		r.Route("/{id}", func(r chi.Router) { // route /users/{id}
-			r.Use(calendars.Context)                // Use Context method to get user ID
-			r.Get("/", calendars.GetCalendar)       // GET /users/{id} - Récupérer un user
-			r.Put("/", calendars.UpdateCalendar)    // PUT /users/{id} - Mettre à jour un user
-			r.Delete("/", calendars.DeleteCalendar) // DELETE /users/{id} - Supprimer un user
+		r.Route("/{id}", func(r chi.Router) { // route /calendars/{id}
+			r.Use(calendars.Context)                // Use Context method to get calendar ID
+			r.Get("/", calendars.GetCalendar)       // GET /calendars/{id} - Get a calendar
+			r.Put("/", calendars.UpdateCalendar)    // PUT /calendars/{id} - Update a calendar
+			r.Delete("/", calendars.DeleteCalendar) // DELETE /calendars/{id} - Delete a calendar
+		})
+	})
+	r.Route("/alerts", func(r chi.Router) { // route /alerts
+		r.Get("/", alerts.GetAlerts)   // GET /alerts - Get all alerts
+		r.Post("/", alerts.CreatAlert) // POST /alerts - Create a new alert
+
+		r.Route("/{id}", func(r chi.Router) { // route /alerts/{id}
+			r.Use(alerts.Context)             // Use Context method to get alert ID
+			r.Get("/", alerts.GetAlert)       // GET /alerts/{id} - Get an alert
+			r.Put("/", alerts.UpdateAlert)    // PUT /alerts/{id} - Update an alert
+			r.Delete("/", alerts.DeleteAlert) // DELETE /alerts/{id} - Delete an alert
 		})
 	})
 
@@ -42,8 +54,8 @@ func init() {
 		);
 		CREATE TABLE IF NOT EXISTS alerts (
 		    id VARCHAR(255) PRIMARY KEY NOT NULL UNIQUE,
-		    ressource VARCHAR(255),
-		    allRessource BOOLEAN NOT NULL,
+		    resource VARCHAR(255),
+		    allResources BOOLEAN NOT NULL,
 		    mail VARCHAR(255)
 		);`,
 	}

@@ -1,26 +1,26 @@
-package calendars
+package alerts
 
 import (
 	"encoding/json"
 	"middleware/config/internal/helpers"
-	"middleware/config/internal/services/calendars"
+	"middleware/config/internal/services/alerts"
 	"net/http"
 
 	"github.com/gofrs/uuid"
 )
 
-// DeleteCalendar
-// @Tags         calendars
-// @Summary      Delete a calendar.
-// @Description  Delete a calendar
-// @Success      200            {object}  models.User
+// DeleteAlert
+// @Tags         alert
+// @Summary      Delete an alert.
+// @Description  Delete an alert
+// @Success      200            {object}  models.Alert
 // @Failure      500            "Something went wrong"
-// @Router       /calendars [delete]
-func DeleteCalendar(w http.ResponseWriter, r *http.Request) {
+// @Router       /alerts [delete]
+func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	calendarId, _ := ctx.Value("calendarId").(uuid.UUID)
+	alertId, _ := ctx.Value("alertId").(uuid.UUID)
 
-	err := calendars.DeleteCalendar(calendarId)
+	err := alerts.DeleteAlert(alertId)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)

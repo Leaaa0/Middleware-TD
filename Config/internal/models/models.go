@@ -10,9 +10,9 @@ type Calendar struct {
 	Name  string     `json:"name"`
 }
 
-type Alerts struct {
-	Id            *uuid.UUID `json:"id"`
-	ressource     *uuid.UUID `json:"ressource"`
-	allRessources bool       `json:"allRessources"`
-	mail          string     `json:"mail"`
+type Alert struct {
+	Id           *uuid.UUID `json:"id"`
+	Resource     *uuid.UUID `json:"resource"`
+	AllResources bool       `json:"allResources"`
+	Mail         string     `json:"mail"`
 }

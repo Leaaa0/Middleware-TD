@@ -25,7 +25,7 @@ type UpdateCalendarResponse struct {
 // @Tags         calendars
 // @Summary      Update a calendar.
 // @Description  Update a calendar
-// @Success      200            {object}  models.Calendar
+// @Success      200            {object}  models.Alert
 // @Failure      400            "Bad request"
 // @Failure      422            "Cannot parse id"
 // @Failure      500            "Something went wrong"
@@ -58,7 +58,7 @@ func UpdateCalendar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bodyResponse := UpdateCalendarResponse{
-		Message:  "Calendar updated successfully",
+		Message:  "Alert updated successfully",
 		Calendar: *calendarUpdated,
 	}
 	w.WriteHeader(http.StatusOK)
