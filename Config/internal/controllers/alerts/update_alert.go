@@ -12,9 +12,9 @@ import (
 )
 
 type AlertModifying struct {
-	Resource     *uuid.UUID `json:"resource"`
-	AllResources bool       `json:"allResources"`
-	Mail         string     `json:"mail"`
+	Resource     string `json:"resource"`
+	AllResources bool   `json:"allResources"`
+	Mail         string `json:"mail"`
 }
 
 type UpdateAlertResponse struct {
@@ -47,12 +47,20 @@ func UpdateAlert(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Contact mail required", http.StatusBadRequest)
 		return
 	}
-	if alertModifying.Resource.String() == "" && alertModifying.AllResources == false {
-		http.Error(w, "At least one ressource must be watched", http.StatusBadRequest)
-		return
+	if alertModifying.AllResources == false {
+		if alertModifying.Resource == "" {
+			http.Error(w, "At least one ressource must be watched", http.StatusBadRequest)
+			return
+		}
+
+		_, err = uuid.FromString(alertModifying.Resource)
+		if err != nil {
+			http.Error(w, "Resource ID incorrect : must be an UUID", http.StatusBadRequest)
+			return
+		}
 	}
 
-	alertUpdated, err := alerts.UpdateAlert(alertId, *alertModifying.Resource, alertModifying.AllResources, alertModifying.Mail)
+	alertUpdated, err := alerts.UpdateAlert(alertId, alertModifying.Resource, alertModifying.AllResources, alertModifying.Mail)
 	if err != nil {
 		body, status := helpers.RespondError(err)
 		w.WriteHeader(status)

@@ -62,7 +62,11 @@ func CreateAlert(resource string, allResources bool, mail string) (*models.Alert
 		return nil, err
 	}
 
-	_, err = db.Exec("INSERT INTO alerts (id, resource, allResources, mail) VALUES (?,?,?,?)", id.String(), resource, allResources, mail)
+	if resource == "" {
+		_, err = db.Exec("INSERT INTO alerts (id, resource, allResources, mail) VALUES (?,?,?,?)", id.String(), nil, allResources, mail)
+	} else {
+		_, err = db.Exec("INSERT INTO alerts (id, resource, allResources, mail) VALUES (?,?,?,?)", id.String(), resource, allResources, mail)
+	}
 	helpers.CloseDB(db)
 	if err != nil {
 		return nil, err
@@ -87,17 +91,22 @@ func DeleteAlert(id uuid.UUID) error {
 	return nil
 }
 
-func UpdateAlert(id uuid.UUID, resource uuid.UUID, allResource bool, mail string) (*models.Alert, error) {
+func UpdateAlert(id uuid.UUID, resource string, allResource bool, mail string) (*models.Alert, error) {
 	db, err := helpers.OpenDB()
 	if err != nil {
 		return nil, err
 	}
-	_, err = db.Exec("UPDATE alerts SET resource=?, allResources=?, mail=? WHERE id=?", resource, allResource, mail, id.String())
+	if resource == "" {
+		_, err = db.Exec("UPDATE alerts SET resource=?, allResources=?, mail=? WHERE id=?", nil, allResource, mail, id.String())
+	} else {
+		_, err = db.Exec("UPDATE alerts SET resource=?, allResources=?, mail=? WHERE id=?", resource, allResource, mail, id.String())
+	}
 	helpers.CloseDB(db)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.Alert{&id, &resource, allResource, mail}, nil
+	resourceUuid, _ := uuid.FromString(resource)
+	return &models.Alert{&id, &resourceUuid, allResource, mail}, nil
 }

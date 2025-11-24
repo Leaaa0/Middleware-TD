@@ -41,15 +41,17 @@ func CreatAlert(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Contact mail required", http.StatusBadRequest)
 		return
 	}
-	if alertAdding.AllResources == false && alertAdding.Resource == "" {
-		http.Error(w, "Resource id required if AllResources is false", http.StatusBadRequest)
-		return
-	}
+	if alertAdding.AllResources == false {
+		if alertAdding.Resource == "" {
+			http.Error(w, "At least one ressource must be watched", http.StatusBadRequest)
+			return
+		}
 
-	_, err = uuid.FromString(alertAdding.Resource)
-	if err != nil {
-		http.Error(w, "Resource ID incorrect : must be an UUID", http.StatusBadRequest)
-		return
+		_, err = uuid.FromString(alertAdding.Resource)
+		if err != nil {
+			http.Error(w, "Resource ID incorrect : must be an UUID", http.StatusBadRequest)
+			return
+		}
 	}
 
 	alertCreated, err := alerts.CreateAlert(alertAdding.Resource, alertAdding.AllResources, alertAdding.Mail)

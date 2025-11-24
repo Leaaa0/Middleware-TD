@@ -45,6 +45,9 @@ func GetAlertById(id uuid.UUID) (*models.Alert, error) {
 func CreateAlert(resource string, allResources bool, mail string) (*models.Alert, error) {
 	var err error
 	// calling repository
+	if allResources {
+		resource = ""
+	}
 	alertCreated, err := repository.CreateAlert(resource, allResources, mail)
 	// managing errors
 	if err != nil {
@@ -69,7 +72,10 @@ func DeleteAlert(id uuid.UUID) error {
 	return err
 }
 
-func UpdateAlert(id uuid.UUID, resource uuid.UUID, allResource bool, mail string) (*models.Alert, error) {
+func UpdateAlert(id uuid.UUID, resource string, allResource bool, mail string) (*models.Alert, error) {
+	if allResource {
+		resource = ""
+	}
 	alertUpdated, err := repository.UpdateAlert(id, resource, allResource, mail)
 	if err != nil {
 		logrus.Errorf("error deleting alert %s : %s", id.String(), err.Error())
