@@ -1,0 +1,12 @@
+pour tester:
+
+1er terminal : nats-server -js
+
+2eme terminal : nats sub "EVENTS.>"
+
+3eme terminal : go run cmd/main.go
+
+a faire :
+-mise a jour fonction getAgendaIds avec recuperation via api config
+-etablif l'intervale de recuperation 
+-ajoute de tout les gestion d'erreur
