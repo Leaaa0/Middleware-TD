@@ -1,7 +1,6 @@
 package calendars
 
 import (
-	"encoding/json"
 	"middleware/config/internal/helpers"
 	"middleware/config/internal/services/calendars"
 	"net/http"
@@ -14,6 +13,8 @@ import (
 // @Summary      Delete a calendar.
 // @Description  Delete a calendar
 // @Success      200            {object}  models.User
+// @Failure 	 404			"Calendar not found
+// @Failure      422            "Cannot parse id"
 // @Failure      500            "Something went wrong"
 // @Router       /calendars [delete]
 func DeleteCalendar(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +31,6 @@ func DeleteCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal("Alert deleted successfully")
-	_, _ = w.Write(body)
+	w.WriteHeader(http.StatusNoContent)
 	return
 }

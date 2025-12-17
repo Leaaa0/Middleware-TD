@@ -30,7 +30,7 @@ func GetCalendarById(id uuid.UUID) (*models.Calendar, error) {
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
 			return nil, &models.ErrorNotFound{
-				Message: "calendar not found",
+				Message: "Calendar not found",
 			}
 		}
 		logrus.Errorf("error retrieving calendar %s : %s", id.String(), err.Error())
@@ -58,7 +58,11 @@ func CreateCalendar(ucaId int, name string) (*models.Calendar, error) {
 }
 
 func DeleteCalendar(id uuid.UUID) error {
-	err := repository.DeleteCalendar(id)
+	_, err := GetCalendarById(id) // Check if calendar exists
+	if err != nil {
+		return err
+	}
+	err = repository.DeleteCalendar(id)
 	if err != nil {
 		logrus.Errorf("error deleting calendar %s : %s", id.String(), err.Error())
 		return &models.ErrorGeneric{
@@ -70,6 +74,10 @@ func DeleteCalendar(id uuid.UUID) error {
 }
 
 func UpdateCalendar(id uuid.UUID, ucaId int, name string) (*models.Calendar, error) {
+	_, err := GetCalendarById(id) // Check if calendar exists
+	if err != nil {
+		return nil, err
+	}
 	calendarUpdated, err := repository.UpdateCalendar(id, ucaId, name)
 	if err != nil {
 		logrus.Errorf("error deleting calendar %s : %s", id.String(), err.Error())

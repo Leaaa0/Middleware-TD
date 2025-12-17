@@ -19,6 +19,14 @@ func (e ErrorNotFound) Error() string {
 	return fmt.Sprintf("Not found - %s", e.Message)
 }
 
+type ErrorBadRequest struct {
+	Message string `default:""`
+}
+
+func (e ErrorBadRequest) Error() string {
+	return e.Message
+}
+
 type ErrorGeneric struct {
 	Message string `default:""`
 }

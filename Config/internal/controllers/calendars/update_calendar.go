@@ -1,24 +1,26 @@
 package calendars
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"middleware/config/internal/helpers"
 	"middleware/config/internal/models"
 	"middleware/config/internal/services/calendars"
 	"net/http"
 
 	"github.com/gofrs/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 type CalendarModifying struct {
-	UcaId int    `json:"ucaId"`
-	Name  string `json:"name"`
+	UcaId int    `json:"UcaId"`
+	Name  string `json:"Name"`
 }
 
 type UpdateCalendarResponse struct {
-	Message  string          `json:"message"`
-	Calendar models.Calendar `json:"calendar"`
+	Message  string          `json:"Message"`
+	Calendar models.Calendar `json:"Calendar"`
 }
 
 // UpdateCalendar
@@ -26,8 +28,10 @@ type UpdateCalendarResponse struct {
 // @Summary      Update a calendar.
 // @Description  Update a calendar
 // @Success      200            {object}  models.Alert
-// @Failure      400            "Bad request"
+// @Failure 	 400 			"Cannot parse body to JSON data"
+// @Failure 	 404			"Calendar not found"
 // @Failure      422            "Cannot parse id"
+// @Failure 	 422 			"Incorrect JSON data : Name and ucaID required"
 // @Failure      500            "Something went wrong"
 // @Router       /calendars [put]
 func UpdateCalendar(w http.ResponseWriter, r *http.Request) {
@@ -36,14 +40,29 @@ func UpdateCalendar(w http.ResponseWriter, r *http.Request) {
 
 	var calendarModifying CalendarModifying
 
-	err := json.NewDecoder(r.Body).Decode(&calendarModifying)
+	bodyBytes, err := io.ReadAll(r.Body)
+	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	err = json.NewDecoder(r.Body).Decode(&calendarModifying)
 	if err != nil {
-		logrus.Error("Error while decoding JSON body : ", err)
-		http.Error(w, "JSON data incorrects", http.StatusBadRequest)
+		err = &models.ErrorBadRequest{
+			Message: fmt.Sprintf("Cannot parse data as JSON data. Body received : ", string(bodyBytes)),
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
-	if calendarModifying.Name == "" || calendarModifying.UcaId < 10000 { // ucaId doit être composé de 6 chiffres
-		http.Error(w, " Name and ucaID required", http.StatusBadRequest)
+	if calendarModifying.Name == "" || calendarModifying.UcaId < 10000 { // ucaId need to be 6 digits number
+		err = &models.ErrorUnprocessableEntity{
+			Message: "Incorrect JSON data : Name and ucaID required",
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 
@@ -57,12 +76,8 @@ func UpdateCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bodyResponse := UpdateCalendarResponse{
-		Message:  "Alert updated successfully",
-		Calendar: *calendarUpdated,
-	}
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(bodyResponse)
+	body, _ := json.Marshal(calendarUpdated)
 	_, _ = w.Write(body)
 	return
 }

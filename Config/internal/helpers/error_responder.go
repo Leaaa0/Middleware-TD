@@ -21,6 +21,10 @@ func RespondError(err error) (body []byte, status int) {
 		status = http.StatusUnprocessableEntity
 	}
 
+	if _, isErr := err.(*models.ErrorBadRequest); isErr {
+		status = http.StatusBadRequest
+	}
+
 	// insert other if statement here for other error types
 
 	// if error is not generic, we can send message

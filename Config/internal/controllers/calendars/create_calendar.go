@@ -1,22 +1,24 @@
 package calendars
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
+	"middleware/config/internal/helpers"
 	"middleware/config/internal/models"
 	"middleware/config/internal/services/calendars"
 	"net/http"
-
-	"github.com/sirupsen/logrus"
 )
 
 type CalendarAdding struct {
-	UcaId int    `json:"ucaId"`
-	Name  string `json:"name"`
+	UcaId int    `json:"UcaId"`
+	Name  string `json:"Name"`
 }
 
 type CreateCalendarResponse struct {
-	Message  string          `json:"message"`
-	Calendar models.Calendar `json:"calendar"`
+	Message  string          `json:"Message"`
+	Calendar models.Calendar `json:"Calendar"`
 }
 
 // CreateCalendar
@@ -24,34 +26,51 @@ type CreateCalendarResponse struct {
 // @Summary      Create a calendar.
 // @Description  Create a calendar
 // @Success      200            {object}  models.Alert
+// @Failure 	 400			"Cannot parse body to JSON data"
+// @Failure 	 422 			"Incorrect JSON data : Name and ucaID required"
 // @Failure      500            "Something went wrong"
 // @Router       /calendars [post]
 func CreateCalendar(w http.ResponseWriter, r *http.Request) {
 	var calendarAdding CalendarAdding
 
-	err := json.NewDecoder(r.Body).Decode(&calendarAdding)
+	bodyBytes, err := io.ReadAll(r.Body)
+	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	err = json.NewDecoder(r.Body).Decode(&calendarAdding)
 	if err != nil {
-		logrus.Error("Error while decoding JSON body : ", err)
-		http.Error(w, "JSON data incorrects", http.StatusBadRequest)
+		err = &models.ErrorBadRequest{
+			Message: fmt.Sprintf("Cannot parse data as JSON data. Body received : ", string(bodyBytes)),
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
-	if calendarAdding.Name == "" || calendarAdding.UcaId < 10000 { // ucaId doit être composé de 6 chiffres
-		http.Error(w, " Name and ucaID required", http.StatusBadRequest)
+	if calendarAdding.Name == "" || calendarAdding.UcaId < 10000 { // ucaId need to be 6 digits number
+		err = &models.ErrorUnprocessableEntity{
+			Message: "Incorrect JSON data : Name and ucaID required",
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 
 	calendarCreated, err := calendars.CreateCalendar(calendarAdding.UcaId, calendarAdding.Name)
 	if err != nil {
-		http.Error(w, "Error while adding new calendar", http.StatusBadRequest)
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 
-	bodyResponse := CreateCalendarResponse{
-		Message:  "Alert added successfully",
-		Calendar: *calendarCreated,
-	}
-	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(bodyResponse)
+	w.WriteHeader(http.StatusCreated)
+	body, _ := json.Marshal(calendarCreated)
 	_, _ = w.Write(body)
 	return
 }
