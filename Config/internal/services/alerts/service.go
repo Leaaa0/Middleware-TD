@@ -30,7 +30,7 @@ func GetAlertById(id uuid.UUID) (*models.Alert, error) {
 	if err != nil {
 		if err.Error() == sql.ErrNoRows.Error() {
 			return nil, &models.ErrorNotFound{
-				Message: "alert not found",
+				Message: "Alert not found",
 			}
 		}
 		logrus.Errorf("error retrieving alert %s : %s", id.String(), err.Error())
@@ -61,7 +61,11 @@ func CreateAlert(resource string, allResources bool, mail string) (*models.Alert
 }
 
 func DeleteAlert(id uuid.UUID) error {
-	err := repository.DeleteAlert(id)
+	_, err := GetAlertById(id) // Check if alert exists
+	if err != nil {
+		return err
+	}
+	err = repository.DeleteAlert(id)
 	if err != nil {
 		logrus.Errorf("error deleting alert %s : %s", id.String(), err.Error())
 		return &models.ErrorGeneric{
@@ -73,6 +77,10 @@ func DeleteAlert(id uuid.UUID) error {
 }
 
 func UpdateAlert(id uuid.UUID, resource string, allResource bool, mail string) (*models.Alert, error) {
+	_, err := GetAlertById(id) // Check if alert exists
+	if err != nil {
+		return nil, err
+	}
 	if allResource {
 		resource = ""
 	}

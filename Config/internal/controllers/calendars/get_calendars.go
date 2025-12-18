@@ -11,7 +11,7 @@ import (
 // @Tags         calendars
 // @Summary      Get all calendars.
 // @Description  Get all calendars.
-// @Success      200            {array}  models.Alert
+// @Success      200            {array}  models.Calendar
 // @Failure      500             "Something went wrong"
 // @Router       /calendars [get]
 func GetCalendars(w http.ResponseWriter, _ *http.Request) {

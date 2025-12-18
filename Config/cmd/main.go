@@ -26,8 +26,8 @@ func main() {
 		})
 	})
 	r.Route("/alerts", func(r chi.Router) { // route /alerts
-		r.Get("/", alerts.GetAlerts)   // GET /alerts - Get all alerts
-		r.Post("/", alerts.CreatAlert) // POST /alerts - Create a new alert
+		r.Get("/", alerts.GetAlerts)    // GET /alerts - Get all alerts
+		r.Post("/", alerts.CreateAlert) // POST /alerts - Create a new alert
 
 		r.Route("/{id}", func(r chi.Router) { // route /alerts/{id}
 			r.Use(alerts.Context)             // Use Context method to get alert ID

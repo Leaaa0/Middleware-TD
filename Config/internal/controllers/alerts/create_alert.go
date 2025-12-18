@@ -1,13 +1,16 @@
 package alerts
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
+	"middleware/config/internal/helpers"
 	"middleware/config/internal/models"
 	"middleware/config/internal/services/alerts"
 	"net/http"
 
 	"github.com/gofrs/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 type AlertAdding struct {
@@ -16,56 +19,82 @@ type AlertAdding struct {
 	Mail         string `json:"mail"`
 }
 
-type CreateAlertResponse struct {
-	Message string       `json:"message"`
-	Alert   models.Alert `json:"alert"`
-}
-
-// CreatAlert
+// CreateAlert
 // @Tags         alert
 // @Summary      Create an alert.
 // @Description  Create an alert
-// @Success      200            {object}  models.Alert
+// @Success      201            {object}  models.Alert
+// @Failure		 400
+// @Failure      422
 // @Failure      500            "Something went wrong"
 // @Router       /alerts [post]
-func CreatAlert(w http.ResponseWriter, r *http.Request) {
+func CreateAlert(w http.ResponseWriter, r *http.Request) {
 	var alertAdding AlertAdding
 
-	err := json.NewDecoder(r.Body).Decode(&alertAdding)
+	bodyBytes, err := io.ReadAll(r.Body)
+	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	err = json.NewDecoder(r.Body).Decode(&alertAdding)
 	if err != nil {
-		logrus.Error("Error while decoding JSON body : ", err)
-		http.Error(w, "JSON data incorrects", http.StatusBadRequest)
+		err = &models.ErrorBadRequest{
+			Message: fmt.Sprintf("Cannot parse data as JSON data. Body received : ", string(bodyBytes)),
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 	if alertAdding.Mail == "" {
-		http.Error(w, "Contact mail required", http.StatusBadRequest)
+		err = &models.ErrorUnprocessableEntity{
+			Message: "Incorrect JSON data : Mail required",
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 	if alertAdding.AllResources == false {
 		if alertAdding.Resource == "" {
-			http.Error(w, "At least one ressource must be watched", http.StatusBadRequest)
+			err = &models.ErrorUnprocessableEntity{
+				Message: "At least one ressource must be watched",
+			}
+			body, status := helpers.RespondError(err)
+			w.WriteHeader(status)
+			if body != nil {
+				_, _ = w.Write(body)
+			}
 			return
 		}
 
 		_, err = uuid.FromString(alertAdding.Resource)
 		if err != nil {
-			http.Error(w, "Resource ID incorrect : must be an UUID", http.StatusBadRequest)
+			err = &models.ErrorUnprocessableEntity{
+				Message: "Resource ID incorrect : must be an UUID",
+			}
+			body, status := helpers.RespondError(err)
+			w.WriteHeader(status)
+			if body != nil {
+				_, _ = w.Write(body)
+			}
 			return
 		}
 	}
 
 	alertCreated, err := alerts.CreateAlert(alertAdding.Resource, alertAdding.AllResources, alertAdding.Mail)
 	if err != nil {
-		http.Error(w, "Error while adding new alert", http.StatusBadRequest)
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 
-	bodyResponse := CreateAlertResponse{
-		Message: "Alert added successfully",
-		Alert:   *alertCreated,
-	}
-	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(bodyResponse)
+	w.WriteHeader(http.StatusCreated)
+	body, _ := json.Marshal(alertCreated)
 	_, _ = w.Write(body)
 	return
 }

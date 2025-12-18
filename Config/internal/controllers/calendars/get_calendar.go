@@ -14,7 +14,7 @@ import (
 // @Summary      Get a calendar.
 // @Description  Get a calendar.
 // @Param        id           	path      string  true  "calendar UUID formatted ID"
-// @Success      200            {object}  models.calendar
+// @Success      200            {object}  models.Calendar
 // @Failure 	 404			"Calendar not found"
 // @Failure      422            "Cannot parse id"
 // @Failure      500            "Something went wrong"

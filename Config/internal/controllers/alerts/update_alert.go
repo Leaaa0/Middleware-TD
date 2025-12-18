@@ -1,14 +1,16 @@
 package alerts
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"middleware/config/internal/helpers"
 	"middleware/config/internal/models"
 	"middleware/config/internal/services/alerts"
 	"net/http"
 
 	"github.com/gofrs/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 type AlertModifying struct {
@@ -17,18 +19,15 @@ type AlertModifying struct {
 	Mail         string `json:"mail"`
 }
 
-type UpdateAlertResponse struct {
-	Message string       `json:"message"`
-	Alert   models.Alert `json:"alert"`
-}
-
 // UpdateAlert
 // @Tags         alert
 // @Summary      Update an alert.
 // @Description  Update an alert
 // @Success      200            {object}  models.Alert
-// @Failure      400            "Bad request"
+// @Failure 	 400 			"Cannot parse body to JSON data"
+// @Failure 	 404			"Alert not found"
 // @Failure      422            "Cannot parse id"
+// @Failure 	 422 			"Incorrect JSON data : email required"
 // @Failure      500            "Something went wrong"
 // @Router       /alerts [put]
 func UpdateAlert(w http.ResponseWriter, r *http.Request) {
@@ -37,25 +36,54 @@ func UpdateAlert(w http.ResponseWriter, r *http.Request) {
 
 	var alertModifying AlertModifying
 
-	err := json.NewDecoder(r.Body).Decode(&alertModifying)
+	bodyBytes, err := io.ReadAll(r.Body)
+	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	err = json.NewDecoder(r.Body).Decode(&alertModifying)
 	if err != nil {
-		logrus.Error("Error while decoding JSON body : ", err)
-		http.Error(w, "JSON data incorrects", http.StatusBadRequest)
+		err = &models.ErrorBadRequest{
+			Message: fmt.Sprintf("Cannot parse data as JSON data. Body received : ", string(bodyBytes)),
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 	if alertModifying.Mail == "" {
-		http.Error(w, "Contact mail required", http.StatusBadRequest)
+		err = &models.ErrorUnprocessableEntity{
+			Message: "Incorrect JSON data : Mail required",
+		}
+		body, status := helpers.RespondError(err)
+		w.WriteHeader(status)
+		if body != nil {
+			_, _ = w.Write(body)
+		}
 		return
 	}
 	if alertModifying.AllResources == false {
 		if alertModifying.Resource == "" {
-			http.Error(w, "At least one ressource must be watched", http.StatusBadRequest)
+			err = &models.ErrorUnprocessableEntity{
+				Message: "At least one ressource must be watched",
+			}
+			body, status := helpers.RespondError(err)
+			w.WriteHeader(status)
+			if body != nil {
+				_, _ = w.Write(body)
+			}
 			return
 		}
 
 		_, err = uuid.FromString(alertModifying.Resource)
 		if err != nil {
-			http.Error(w, "Resource ID incorrect : must be an UUID", http.StatusBadRequest)
+			err = &models.ErrorUnprocessableEntity{
+				Message: "Resource ID incorrect : must be an UUID",
+			}
+			body, status := helpers.RespondError(err)
+			w.WriteHeader(status)
+			if body != nil {
+				_, _ = w.Write(body)
+			}
 			return
 		}
 	}
@@ -70,12 +98,8 @@ func UpdateAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bodyResponse := UpdateAlertResponse{
-		Message: "Alert updated successfully",
-		Alert:   *alertUpdated,
-	}
 	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal(bodyResponse)
+	body, _ := json.Marshal(alertUpdated)
 	_, _ = w.Write(body)
 	return
 }

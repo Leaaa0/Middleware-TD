@@ -12,7 +12,7 @@ import (
 // @Tags         calendars
 // @Summary      Delete a calendar.
 // @Description  Delete a calendar
-// @Success      200            {object}  models.User
+// @Success      204
 // @Failure 	 404			"Calendar not found
 // @Failure      422            "Cannot parse id"
 // @Failure      500            "Something went wrong"

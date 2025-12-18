@@ -12,7 +12,7 @@ type Calendar struct {
 
 type Alert struct {
 	Id           *uuid.UUID `json:"id"`
-	Resource     *uuid.UUID `json:"resource"`
+	Resource     *uuid.UUID `json:"resource"` // "" if AllRessource == true
 	AllResources bool       `json:"allResources"`
 	Mail         string     `json:"mail"`
 }

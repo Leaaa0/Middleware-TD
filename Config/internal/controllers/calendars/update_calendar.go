@@ -14,20 +14,15 @@ import (
 )
 
 type CalendarModifying struct {
-	UcaId int    `json:"UcaId"`
-	Name  string `json:"Name"`
-}
-
-type UpdateCalendarResponse struct {
-	Message  string          `json:"Message"`
-	Calendar models.Calendar `json:"Calendar"`
+	UcaId int    `json:"ucaId"`
+	Name  string `json:"name"`
 }
 
 // UpdateCalendar
 // @Tags         calendars
 // @Summary      Update a calendar.
 // @Description  Update a calendar
-// @Success      200            {object}  models.Alert
+// @Success      200            {object}  models.Calendar
 // @Failure 	 400 			"Cannot parse body to JSON data"
 // @Failure 	 404			"Calendar not found"
 // @Failure      422            "Cannot parse id"

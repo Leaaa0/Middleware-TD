@@ -12,20 +12,15 @@ import (
 )
 
 type CalendarAdding struct {
-	UcaId int    `json:"UcaId"`
-	Name  string `json:"Name"`
-}
-
-type CreateCalendarResponse struct {
-	Message  string          `json:"Message"`
-	Calendar models.Calendar `json:"Calendar"`
+	UcaId int    `json:"ucaId"`
+	Name  string `json:"name"`
 }
 
 // CreateCalendar
 // @Tags         calendar
 // @Summary      Create a calendar.
 // @Description  Create a calendar
-// @Success      200            {object}  models.Alert
+// @Success      201            {object}  models.Calendar
 // @Failure 	 400			"Cannot parse body to JSON data"
 // @Failure 	 422 			"Incorrect JSON data : Name and ucaID required"
 // @Failure      500            "Something went wrong"

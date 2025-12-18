@@ -1,7 +1,6 @@
 package alerts
 
 import (
-	"encoding/json"
 	"middleware/config/internal/helpers"
 	"middleware/config/internal/services/alerts"
 	"net/http"
@@ -13,7 +12,9 @@ import (
 // @Tags         alert
 // @Summary      Delete an alert.
 // @Description  Delete an alert
-// @Success      200            {object}  models.Alert
+// @Success      204
+// @Failure 	 404			"Calendar not found
+// @Failure      422            "Cannot parse id"
 // @Failure      500            "Something went wrong"
 // @Router       /alerts [delete]
 func DeleteAlert(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +31,6 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	body, _ := json.Marshal("Alert deleted successfully")
-	_, _ = w.Write(body)
+	w.WriteHeader(http.StatusNoContent)
 	return
 }
