@@ -8,3 +8,7 @@ type Event struct {
 	DTStart     string `json:"dtstart"`
 	DTEnd       string `json:"dtend"`
 }
+
+type Calendar struct {
+	UcaID int `json:"ucaId"`
+}

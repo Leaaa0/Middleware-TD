@@ -1,14 +1,14 @@
 package nats
 
 import (
+	natsgo "github.com/nats-io/nats.go"
+
 	"log"
 	"strings"
-
-	"github.com/nats-io/nats.go"
 )
 
-func InitJetStream() nats.JetStreamContext {
-	nc, err := nats.Connect(nats.DefaultURL)
+func InitJetStream() natsgo.JetStreamContext {
+	nc, err := natsgo.Connect(natsgo.DefaultURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -18,7 +18,7 @@ func InitJetStream() nats.JetStreamContext {
 		log.Fatal(err)
 	}
 
-	_, err = jsc.AddStream(&nats.StreamConfig{
+	_, err = jsc.AddStream(&natsgo.StreamConfig{
 		Name:     "EVENTS",
 		Subjects: []string{"EVENTS.>"},
 	})
